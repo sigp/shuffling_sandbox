@@ -12,7 +12,7 @@ from src.utils import (blake, list_compare)
 shufflers = {
     "v2.1_spec": v2_1_spec.shuffle,
     "v2.1_spec_modified": v2_1_spec_modified.shuffle,
-    "pedagogical": reference.shuffle,
+    "reference": reference.shuffle,
 }
 
 
@@ -44,20 +44,30 @@ def compare_outputs(*args, **kwargs):
         print("{:20}\t{}\t{}".format(a_name, symbol, b_name))
 
 
-def find_inequality(shuffler_a, shuffler_b):
-    list_size = 10000
-    while True:
-        rand_string = ''.join(
-            random.choices(string.ascii_lowercase + string.digits, k=12)
-        )
-        rand_bytes = rand_string.encode()
-        a = shuffler_a(list(range(list_size)), blake(rand_bytes))
-        b = shuffler_b(list(range(list_size)), blake(rand_bytes))
+def fuzz(max_list_size, shufflers):
+    tuples = [(k, v) for k, v in shufflers.items()]
+    pairs = itertools.combinations(tuples, 2)
+    rand_string = ''.join(
+        random.choices(string.ascii_lowercase + string.digits, k=12)
+    )
+    rand_bytes = rand_string.encode()
+    list_size = random.randint(1, max_list_size)
+    for pair in pairs:
+        shuffler_a_name = pair[0][0]
+        shuffler_a_func = pair[0][1]
+        shuffler_b_name = pair[1][0]
+        shuffler_b_func = pair[1][1]
+        a = shuffler_a_func(list(range(list_size)), blake(rand_bytes))
+        b = shuffler_b_func(list(range(list_size)), blake(rand_bytes))
         if not list_compare(a, b):
-            print(
-                "Inequal with seed: blake({}), list length:{}"
-                .format(rand_string, list_size)
-            )
+            print(("Inequality found! rand_String: {}, list_size: {}, " +
+                   " shuffler_a: {}," + " shuffler_b: {}")
+                  .format(
+                      rand_string,
+                      list_size,
+                      shuffler_a_name,
+                      shuffler_b_name
+                  ))
 
 
 """
@@ -67,6 +77,7 @@ Begin argument parsing
 METHODS = (
     "benchmark",
     "compare",
+    "inequality_fuzz",
 )
 
 parser = argparse.ArgumentParser(description='Sandbox for testing shuffling functions.')
@@ -89,3 +100,7 @@ if args.method == "benchmark":
     benchmark_shufflers(args.rounds, lst, seed)
 elif args.method == "compare":
     compare_outputs(lst, seed)
+elif args.method == "inequality_fuzz":
+    shufflers.pop("v2.1_spec")  # this shuffler will always be different
+    while True:
+        fuzz(args.list_size, shufflers)
