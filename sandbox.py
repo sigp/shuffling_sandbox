@@ -60,7 +60,7 @@ def fuzz(max_list_size, shufflers):
         a = shuffler_a_func(list(range(list_size)), blake(rand_bytes))
         b = shuffler_b_func(list(range(list_size)), blake(rand_bytes))
         if not list_compare(a, b):
-            print(("Inequality found! rand_String: {}, list_size: {}, " +
+            print(("Inequality found! rand_string: {}, list_size: {}, " +
                    " shuffler_a: {}," + " shuffler_b: {}")
                   .format(
                       rand_string,

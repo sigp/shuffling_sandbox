@@ -52,7 +52,7 @@ Example:
 ```
 $ python sandbox.py inequality_fuzz --list-size 1000
 
-Inequality found! rand_String: y1zqp70s84q3, list_size: 294,  shuffler_a: v2.1_spec, shuffler_b: v2.1_spec_modified
+Inequality found! rand_string: y1zqp70s84q3, list_size: 294,  shuffler_a: v2.1_spec, shuffler_b: v2.1_spec_modified
 ```
 
 ## Shuffler Implementations
