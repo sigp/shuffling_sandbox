@@ -58,8 +58,8 @@ Inequality found! rand_string: y1zqp70s84q3, list_size: 294,  shuffler_a: v2.1_s
 ## Shuffler Implementations
 
  - `src/shufflers/v2_1_spec.py`: the implementation from the beacon_chain
-   specification. The author of this repository believes this to be buggy.
+   specification.
  - `src/shufflers/v2_1_spec_modified.py`: the implementation from the
-   beacon_chain specification modified fix the perceived bugs.
+   beacon_chain specification modified fix some perceived bugs.
  - `src/shufflers/reference.py`: a reference implementation, designed for
    readability.
