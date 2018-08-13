@@ -18,7 +18,7 @@ def durstenfeld_shuffle(lst, rand_range):
 
 class ShuffleRng:
     def __init__(self, seed):
-        self.seed = seed
+        self.seed = blake(seed)
         self.seed_idx = 0
 
     def rehash_seed(self):

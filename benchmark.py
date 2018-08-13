@@ -3,20 +3,25 @@ import itertools
 import random
 import string
 
-from src.shufflers import original
-from src.shufflers import fixed
-from src.shufflers import separate
+from src.shufflers import v2_1_spec
+from src.shufflers import v2_1_spec_modified
+from src.shufflers import reference
 from src.utils import (blake, list_compare)
 
 shufflers = {
-    "v2.1_spec": original.shuffle,
-    "v2.1_spec_modified": fixed.shuffle,
-    "pedagogical": separate.shuffle,
+    "v2.1_spec": v2_1_spec.shuffle,
+    "v2.1_spec_modified": v2_1_spec_modified.shuffle,
+    "pedagogical": reference.shuffle,
 }
 
-BENCHMARK_ROUNDS = 100
+BENCHMARK_ROUNDS = 10000
+LIST_SIZE = 5
 
-lst = list(range(100000))
+lst = list(range(LIST_SIZE))
+
+# This seed is known to cause differences between the
+# v2.1 and v2.1_fixed implemenations with a list size
+# of 10000
 seed = blake("hq2u4v6vk17t".encode())
 
 

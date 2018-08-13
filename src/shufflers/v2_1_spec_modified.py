@@ -11,11 +11,11 @@ def shuffle(lst,
     o = [x for x in lst]
     source = seed
     i = 0
-    while i < len(lst):
+    while i < (len(lst) - 1):
         source = blake(source)
         for pos in range(0, 30, 3):
             remaining = lst_count - i
-            if remaining == 0:
+            if remaining == 1:
                 break
             m = int.from_bytes(source[pos:pos+3], 'big')
             rand_max = 16777216 - 16777216 % remaining
