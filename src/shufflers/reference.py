@@ -31,6 +31,7 @@ class ShuffleRng:
         last = self.seed_idx + num_bytes
         if last >= len(self.seed):
             self.rehash_seed()
+            return self.rand()
         x = int.from_bytes(self.seed[first:last], 'big')
         self.seed_idx += num_bytes
         return x
