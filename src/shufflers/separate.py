@@ -1,4 +1,4 @@
-from .utils import blake
+from src.utils import blake
 
 NUM_RAND_BITS = 24
 

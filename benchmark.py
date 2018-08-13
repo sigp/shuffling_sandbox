@@ -1,48 +1,70 @@
 import time
-from shufflers import original
-from shufflers import fixed
-from shufflers import separate
-from shufflers.utils import blake
+import itertools
+import random
+import string
 
-lst = list(range(10000))
-seed = blake(b"1ktjd4npm46i")
+from src.shufflers import original
+from src.shufflers import fixed
+from src.shufflers import separate
+from src.utils import (blake, list_compare)
 
-a = original.shuffle(lst, seed)
-b = separate.shuffle(lst, seed)
+shufflers = {
+    "v2.1_spec": original.shuffle,
+    "v2.1_spec_modified": fixed.shuffle,
+    "pedagogical": separate.shuffle,
+}
+
+BENCHMARK_ROUNDS = 100
+
+lst = list(range(100000))
+seed = blake("hq2u4v6vk17t".encode())
 
 
-def st_time(func):
-    """
-        st decorator to calculate the total time of a func
-    """
-    def st_func(*args, **keyArgs):
-        rounds = 5000
+def benchmark_shufflers(*args, **kwargs):
+    rounds = BENCHMARK_ROUNDS
+    for name, func in shufflers.items():
         t1 = time.time()
         for _ in range(rounds):
-            r = func(*args, **keyArgs)
+            func(*args, **kwargs)
         t2 = time.time()
         avg_time = (t2 - t1) / rounds
-        print("Function={}, Time={}".format(func.__name__, avg_time))
-        return r
-
-    return st_func
+        print("Function={:20}\tTime={}".format(name, avg_time))
 
 
-@st_time
-def run_original():
-    original.shuffle(lst, seed)
+def compare_outputs(*args, **kwargs):
+    results = []
+    for name, func in shufflers.items():
+        result = func(*args, **kwargs)
+        results.append((name, result))
+    pairs = itertools.combinations(results, 2)
+    for pair in pairs:
+        a = pair[0]
+        b = pair[1]
+        a_name = a[0]
+        a_result = a[1]
+        b_name = b[0]
+        b_result = b[1]
+        equal = list_compare(a_result, b_result)
+        symbol = "==" if equal else "!="
+        print("{:20}\t{}\t{}".format(a_name, symbol, b_name))
 
 
-@st_time
-def run_fixed():
-    fixed.shuffle(lst, seed)
+def find_inequality(shuffler_a, shuffler_b):
+    list_size = 10000
+    while True:
+        rand_string = ''.join(
+            random.choices(string.ascii_lowercase + string.digits, k=12)
+        )
+        rand_bytes = rand_string.encode()
+        a = shuffler_a(list(range(list_size)), blake(rand_bytes))
+        b = shuffler_b(list(range(list_size)), blake(rand_bytes))
+        if not list_compare(a, b):
+            print(
+                "Inequal with seed: blake({}), list length:{}"
+                .format(rand_string, list_size)
+            )
 
 
-@st_time
-def run_separate():
-    separate.shuffle(lst, seed)
-
-
-run_original()
-run_fixed()
-run_separate()
+benchmark_shufflers(lst, seed)
+compare_outputs(lst, seed)
+# find_inequality(fixed.shuffle, separate.shuffle)
