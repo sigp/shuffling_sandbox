@@ -2,6 +2,7 @@ import time
 import itertools
 import random
 import string
+import argparse
 
 from src.shufflers import v2_1_spec
 from src.shufflers import v2_1_spec_modified
@@ -14,19 +15,8 @@ shufflers = {
     "pedagogical": reference.shuffle,
 }
 
-BENCHMARK_ROUNDS = 10000
-LIST_SIZE = 5
 
-lst = list(range(LIST_SIZE))
-
-# This seed is known to cause differences between the
-# v2.1 and v2.1_fixed implemenations with a list size
-# of 10000
-seed = blake("hq2u4v6vk17t".encode())
-
-
-def benchmark_shufflers(*args, **kwargs):
-    rounds = BENCHMARK_ROUNDS
+def benchmark_shufflers(rounds, *args, **kwargs):
     for name, func in shufflers.items():
         t1 = time.time()
         for _ in range(rounds):
@@ -70,6 +60,32 @@ def find_inequality(shuffler_a, shuffler_b):
             )
 
 
-benchmark_shufflers(lst, seed)
-compare_outputs(lst, seed)
-# find_inequality(fixed.shuffle, separate.shuffle)
+"""
+Begin argument parsing
+"""
+
+METHODS = (
+    "benchmark",
+    "compare",
+)
+
+parser = argparse.ArgumentParser(description='Sandbox for testing shuffling functions.')
+parser.add_argument('method', metavar='METHOD', type=str, choices=METHODS,
+                    help='The task to be executed. Options: {}'.format(METHODS))
+parser.add_argument('--list-size', dest='list_size',
+                    type=int, default=1000,
+                    help='Length of list to be sorted.')
+parser.add_argument('--rounds', dest='rounds',
+                    type=int, default=10000,
+                    help='Number of rounds when benchmarking.')
+
+args = parser.parse_args()
+
+seed = blake("hq2u4v6vk17t".encode())
+
+lst = list(range(args.list_size))
+
+if args.method == "benchmark":
+    benchmark_shufflers(args.rounds, lst, seed)
+elif args.method == "compare":
+    compare_outputs(lst, seed)
