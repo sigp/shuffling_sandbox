@@ -63,3 +63,5 @@ Inequality found! rand_string: y1zqp70s84q3, list_size: 294,  shuffler_a: v2.1_s
    beacon_chain specification modified fix some perceived bugs.
  - `src/shufflers/reference.py`: a reference implementation, designed for
    readability.
+ - `src/shufflers/bitsipper.py`: a modified version of the reference version
+ which uses the minimum required amount of bits during each rng call. Is slow.
