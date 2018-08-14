@@ -94,7 +94,10 @@ parser.add_argument('--rounds', dest='rounds',
 
 args = parser.parse_args()
 
-seed = blake("hq2u4v6vk17t".encode())
+# this seed is know to cause inequality between the
+# v2.1 and v2.1_modified functions with a list size of 6.
+seed_str = "4kn4driuctg8"
+seed = blake(seed_str.encode())
 
 lst = list(range(args.list_size))
 
