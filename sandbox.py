@@ -104,5 +104,6 @@ elif args.method == "compare":
     compare_outputs(lst, seed)
 elif args.method == "inequality_fuzz":
     shufflers.pop("v2.1_spec")  # this shuffler will always be different
+    shufflers.pop("bitsipper")  # this shuffler will always be different
     while True:
         fuzz(args.list_size, shufflers)
