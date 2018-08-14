@@ -49,6 +49,4 @@ class ShuffleRng:
             x = self.rand(bits)
             if x < rand_max - rand_max % n:
                 break
-            else:
-                print("x: {}, bits: {}".format(x, bits))
         return (x % n) + a
