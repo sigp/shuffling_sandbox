@@ -55,6 +55,32 @@ $ python sandbox.py inequality_fuzz --list-size 1000
 Inequality found! rand_string: y1zqp70s84q3, list_size: 294,  shuffler_a: v2.1_spec, shuffler_b: v2.1_spec_modified
 ```
 
+### Print
+
+Runs each shuffler with the specified list size. Outputs the shuffled list.
+Useful for testing implementations in other languages.
+
+Example:
+```
+$ python sandbox.py print --list-size 12
+
+PARAMS: list_size: 12, seed_str: 4kn4driuctg8
+
+v2.1_spec:
+[3, 2, 5, 8, 4, 7, 9, 1, 0, 10, 11, 6]
+----
+v2.1_spec_modified:
+[7, 4, 8, 6, 5, 3, 0, 11, 1, 2, 10, 9]
+----
+reference:
+[7, 4, 8, 6, 5, 3, 0, 11, 1, 2, 10, 9]
+----
+bitsipper:
+[8, 0, 1, 7, 6, 5, 3, 10, 4, 2, 9, 11]
+----
+```
+
+
 ## Shuffler Implementations
 
  - `src/shufflers/v2_1_spec.py`: the implementation from the beacon_chain

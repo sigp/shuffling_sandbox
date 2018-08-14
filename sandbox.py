@@ -80,6 +80,7 @@ METHODS = (
     "benchmark",
     "compare",
     "inequality_fuzz",
+    "print",
 )
 
 parser = argparse.ArgumentParser(description='Sandbox for testing shuffling functions.')
@@ -110,3 +111,8 @@ elif args.method == "inequality_fuzz":
     shufflers.pop("bitsipper")  # this shuffler will always be different
     while True:
         fuzz(args.list_size, shufflers)
+elif args.method == "print":
+    print("PARAMS: list_size: {}, seed_str: {}".format(len(lst), seed_str))
+    print("")
+    for k, v in shufflers.items():
+        print("{}:\n{}\n----".format(k, v(lst, seed)))
