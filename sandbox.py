@@ -5,14 +5,12 @@ import string
 import argparse
 
 from src.shufflers import v2_1_spec
-from src.shufflers import v2_1_spec_modified
 from src.shufflers import reference
 from src.shufflers import bitsipper
 from src.utils import (blake, list_compare)
 
 shufflers = {
     "v2.1_spec": v2_1_spec.shuffle,
-    "v2.1_spec_modified": v2_1_spec_modified.shuffle,
     "reference": reference.shuffle,
     "bitsipper": bitsipper.shuffle,
 }
