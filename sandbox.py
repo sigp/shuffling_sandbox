@@ -3,6 +3,7 @@ import itertools
 import random
 import string
 import argparse
+import yaml
 
 from src.shufflers import v2_1_spec
 from src.shufflers import reference
@@ -79,6 +80,7 @@ METHODS = (
     "compare",
     "inequality_fuzz",
     "print",
+    "test_vectors",
 )
 
 parser = argparse.ArgumentParser(description='Sandbox for testing shuffling functions.')
@@ -114,3 +116,35 @@ elif args.method == "print":
     print("")
     for k, v in shufflers.items():
         print("{}:\n{}\n----".format(k, v(lst, seed)))
+elif args.method == "test_vectors":
+    shuffler_name = "v2.1_spec"
+    shuffler = shufflers[shuffler_name]
+    results = []
+
+    seeds = [
+        b"",
+        blake("4kn4driuctg8".encode()),     # known to cause conflicts with old shuffler
+        blake("ytre1p".encode()),
+        blake("mytobcffnkvj".encode()),
+        blake("myzu3g7evxp5nkvj".encode()),
+        blake("xdpli1jsx5xb".encode()),
+        blake("oab3mbb3xe8qsx5xb".encode()),
+    ]
+    lists = [
+        [],
+        [0],
+        [255],
+        [4, 6, 2, 6, 1, 4, 6, 2, 1, 5],
+        [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13],
+        [65, 6, 2, 6, 1, 4, 6, 2, 1, 5],
+    ]
+
+    shuffler = shufflers["v2.1_spec"]
+
+    for seed in seeds:
+        for lst in lists:
+            output = shuffler(lst, seed)
+            results.append({"seed": seed, "input": lst, "output": output})
+
+    with open("shuffle_test_vectors.yaml", "w") as f:
+        yaml.dump(results, f)
