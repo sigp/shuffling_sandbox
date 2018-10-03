@@ -146,5 +146,15 @@ elif args.method == "test_vectors":
             output = shuffler(lst, seed)
             results.append({"seed": seed, "input": lst, "output": output})
 
+    body = {
+        "test_cases": results
+    }
+
     with open("shuffle_test_vectors.yaml", "w") as f:
-        yaml.dump(results, f)
+        f.write("title: Shuffling Algorithm Tests\n")
+        f.write("summary: Test vectors for shuffling a list based upon a seed.\n")
+        f.write("test_suite: Shuffling\n")
+        f.write("\n")
+        noalias_dumper = yaml.dumper.Dumper
+        noalias_dumper.ignore_aliases = lambda self, data: True
+        yaml.dump(body, f, Dumper=noalias_dumper)
