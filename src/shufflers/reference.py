@@ -1,6 +1,7 @@
 from src.utils import blake
 
 NUM_RAND_BITS = 24
+RAND_MAX = 2**NUM_RAND_BITS - 1
 
 
 def shuffle(lst, seed):
@@ -37,11 +38,10 @@ class ShuffleRng:
         return x
 
     def rand_range(self, a, b):
-        rand_max = 2**NUM_RAND_BITS
         n = b - a
         x = 0
         while True:
             x = self.rand()
-            if x < rand_max - rand_max % n:
+            if x < RAND_MAX - RAND_MAX % n:
                 break
         return (x % n) + a

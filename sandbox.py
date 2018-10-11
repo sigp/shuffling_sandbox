@@ -8,10 +8,12 @@ import yaml
 from src.shufflers import v2_1_spec
 from src.shufflers import reference
 from src.shufflers import bitsipper
+from src.shufflers import ph_update
 from src.utils import (blake, list_compare)
 
 shufflers = {
-    "v2.1_spec": v2_1_spec.shuffle,
+    # "v2.1_spec": v2_1_spec.shuffle,
+    "ph_update": ph_update.shuffle,
     "reference": reference.shuffle,
     "bitsipper": bitsipper.shuffle,
 }
@@ -89,6 +91,9 @@ parser.add_argument('method', metavar='METHOD', type=str, choices=METHODS,
 parser.add_argument('--list-size', dest='list_size',
                     type=int, default=1000,
                     help='Length of list to be sorted.')
+parser.add_argument('--seed', dest='seed_str',
+                    type=str, default="4kn4driuctg8",
+                    help='Initial seed (not used for fuzzing)')
 parser.add_argument('--rounds', dest='rounds',
                     type=int, default=10000,
                     help='Number of rounds when benchmarking.')
@@ -97,8 +102,7 @@ args = parser.parse_args()
 
 # this seed is know to cause inequality between the
 # v2.1 and v2.1_modified functions with a list size of 6.
-seed_str = "4kn4driuctg8"
-seed = blake(seed_str.encode())
+seed = blake(args.seed_str.encode())
 
 lst = list(range(args.list_size))
 
@@ -107,12 +111,14 @@ if args.method == "benchmark":
 elif args.method == "compare":
     compare_outputs(lst, seed)
 elif args.method == "inequality_fuzz":
-    shufflers.pop("v2.1_spec")  # this shuffler will always be different
     shufflers.pop("bitsipper")  # this shuffler will always be different
+    print("Fuzz targets:")
+    for shuffler in shufflers:
+        print(" - {}".format(shuffler))
     while True:
         fuzz(args.list_size, shufflers)
 elif args.method == "print":
-    print("PARAMS: list_size: {}, seed_str: {}".format(len(lst), seed_str))
+    print("PARAMS: list_size: {}, seed_str: {}".format(len(lst), args.seed_str))
     print("")
     for k, v in shufflers.items():
         print("{}:\n{}\n----".format(k, v(lst, seed)))
