@@ -1,26 +1,55 @@
 from src.utils import blake
 
-DEFAULT_CONFIG = "not used"
+hash = blake
 
 
-def shuffle(lst,
-            seed,
-            config=DEFAULT_CONFIG):
-    lst_count = len(lst)
-    assert lst_count <= 16777216
-    o = [x for x in lst]
+def shuffle(values, seed):
+    """
+    Returns the shuffled ``values`` with seed as entropy.
+    """
+    values_count = len(values)
+
+    # Entropy is consumed from the seed in 3-byte (24 bit) chunks.
+    rand_bytes = 3
+    # The highest possible result of the RNG.
+    rand_max = 2 ** (rand_bytes * 8) - 1
+
+    # The range of the RNG places an upper-bound on the size of the list that
+    # may be shuffled. It is a logic error to supply an oversized list.
+    assert values_count < rand_max
+
+    output = [x for x in values]
     source = seed
-    i = 0
-    while i < lst_count:
-        source = blake(source)
-        for pos in range(0, 30, 3):
-            m = int.from_bytes(source[pos:pos+3], 'big')
-            remaining = lst_count - i
-            if remaining == 0:
+    index = 0
+    while index < values_count - 1:
+        # Re-hash the `source` to obtain a new pattern of bytes.
+        source = hash(source)
+        # Iterate through the `source` bytes in 3-byte chunks.
+        for position in range(0, 32 - (32 % rand_bytes), rand_bytes):
+            # Determine the number of indices remaining in `values` and exit
+            # once the last index is reached.
+            remaining = values_count - index
+            if remaining == 1:
                 break
-            rand_max = 16777216 - 16777216 % remaining
-            if m < rand_max:
-                replacement_pos = (m % remaining) + i
-                o[i], o[replacement_pos] = o[replacement_pos], o[i]
-                i += 1
-    return o
+
+            # Read 3-bytes of `source` as a 24-bit big-endian integer.
+            sample_from_source = int.from_bytes(
+                source[position:position + rand_bytes], 'big'
+            )
+
+            # Sample values greater than or equal to `sample_max` will cause
+            # modulo bias when mapped into the `remaining` range.
+            sample_max = rand_max - rand_max % remaining
+
+            # Perform a swap if the consumed entropy will not cause modulo bias.
+            if sample_from_source < sample_max:
+                # Select a replacement index for the current index.
+                replacement_position = (sample_from_source % remaining) + index
+                # Swap the current index with the replacement index.
+                output[index], output[replacement_position] = output[replacement_position], output[index]
+                index += 1
+            else:
+                # The sample causes modulo bias. A new sample should be read.
+                pass
+
+    return output

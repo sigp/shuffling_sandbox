@@ -8,12 +8,10 @@ import yaml
 from src.shufflers import v2_1_spec
 from src.shufflers import reference
 from src.shufflers import bitsipper
-from src.shufflers import ph_update
 from src.utils import (blake, list_compare)
 
 shufflers = {
-    # "v2.1_spec": v2_1_spec.shuffle,
-    "ph_update": ph_update.shuffle,
+    "v2.1_spec": v2_1_spec.shuffle,
     "reference": reference.shuffle,
     "bitsipper": bitsipper.shuffle,
 }
