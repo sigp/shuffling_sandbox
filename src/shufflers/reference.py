@@ -30,9 +30,11 @@ class ShuffleRng:
         num_bytes = int(NUM_RAND_BITS / 8)
         first = self.seed_idx
         last = self.seed_idx + num_bytes
-        if last >= len(self.seed):
-            self.rehash_seed()
-            return self.rand()
+        if last > len(self.seed):
+            self.seed = blake(self.seed)
+            self.seed_idx = 0
+            first = self.seed_idx
+            last = self.seed_idx + num_bytes
         x = int.from_bytes(self.seed[first:last], 'big')
         self.seed_idx += num_bytes
         return x
