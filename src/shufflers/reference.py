@@ -1,4 +1,4 @@
-from src.utils import blake
+from src.utils import keccak256
 
 NUM_RAND_BITS = 24
 RAND_MAX = 2**NUM_RAND_BITS - 1
@@ -19,11 +19,11 @@ def durstenfeld_shuffle(lst, rand_range):
 
 class ShuffleRng:
     def __init__(self, seed):
-        self.seed = blake(seed)
+        self.seed = keccak256(seed)
         self.seed_idx = 0
 
     def rehash_seed(self):
-        self.seed = blake(self.seed)
+        self.seed = keccak256(self.seed)
         self.seed_idx = 0
 
     def rand(self):
@@ -31,7 +31,7 @@ class ShuffleRng:
         first = self.seed_idx
         last = self.seed_idx + num_bytes
         if last > len(self.seed):
-            self.seed = blake(self.seed)
+            self.seed = keccak256(self.seed)
             self.seed_idx = 0
             first = self.seed_idx
             last = self.seed_idx + num_bytes

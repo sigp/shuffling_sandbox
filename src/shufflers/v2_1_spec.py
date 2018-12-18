@@ -1,6 +1,6 @@
-from src.utils import blake
+from src.utils import keccak256
 
-hash = blake
+shuffling_hash = keccak256
 
 
 def shuffle(values, seed):
@@ -23,7 +23,7 @@ def shuffle(values, seed):
     index = 0
     while index < values_count - 1:
         # Re-hash the `source` to obtain a new pattern of bytes.
-        source = hash(source)
+        source = shuffling_hash(source)
         # Iterate through the `source` bytes in 3-byte chunks.
         for position in range(0, 32 - (32 % rand_bytes), rand_bytes):
             # Determine the number of indices remaining in `values` and exit

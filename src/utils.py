@@ -1,12 +1,8 @@
-try:
-    from hashlib import blake2b
-except Exception:
-    from pyblake2 import blake2b
+from sha3 import keccak_256
 
 
-def blake(x):
-    return blake2b(x).digest()[:32]
-
+def keccak256(x):
+    return keccak_256(x).digest()
 
 def list_compare(a, b):
     diff = [i for i, j in zip(a, b) if i != j]
