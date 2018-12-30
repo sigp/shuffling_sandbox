@@ -5,7 +5,7 @@ minimum required bits for the specified range.
 """
 import math
 from bitstring import BitArray
-from src.utils import blake
+from src.utils import keccak256
 
 
 def shuffle(lst, seed):
@@ -23,11 +23,11 @@ def durstenfeld_shuffle(lst, rand_range):
 
 class ShuffleRng:
     def __init__(self, seed):
-        self.seed = BitArray(blake(seed))
+        self.seed = BitArray(keccak256(seed))
         self.seed_idx = 0
 
     def rehash_seed(self):
-        self.seed = BitArray(blake(self.seed.bytes))
+        self.seed = BitArray(keccak256(self.seed.bytes))
         self.seed_idx = 0
 
     def rand(self, num_bits):

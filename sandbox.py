@@ -8,7 +8,7 @@ import yaml
 from src.shufflers import v2_1_spec
 from src.shufflers import reference
 from src.shufflers import bitsipper
-from src.utils import (blake, list_compare)
+from src.utils import list_compare, keccak256
 
 shufflers = {
     "v2.1_spec": v2_1_spec.shuffle,
@@ -58,8 +58,8 @@ def fuzz(max_list_size, shufflers):
         shuffler_a_func = pair[0][1]
         shuffler_b_name = pair[1][0]
         shuffler_b_func = pair[1][1]
-        a = shuffler_a_func(list(range(list_size)), blake(rand_bytes))
-        b = shuffler_b_func(list(range(list_size)), blake(rand_bytes))
+        a = shuffler_a_func(list(range(list_size)), keccak256(rand_bytes))
+        b = shuffler_b_func(list(range(list_size)), keccak256(rand_bytes))
         if not list_compare(a, b):
             print(("Inequality found! rand_string: {}, list_size: {}, " +
                    " shuffler_a: {}," + " shuffler_b: {}")
@@ -100,7 +100,7 @@ args = parser.parse_args()
 
 # this seed is know to cause inequality between the
 # v2.1 and v2.1_modified functions with a list size of 6.
-seed = blake(args.seed_str.encode())
+seed = keccak256(args.seed_str.encode())
 
 lst = list(range(args.list_size))
 
@@ -147,8 +147,8 @@ elif args.method == "test_vectors":
 
     for seed in seeds:
         for lst in lists:
-            blake_seed = blake(seed.encode()) if len(seed) > 0 else b""
-            output = shuffler(lst, blake_seed)
+            keccak_seed = keccak256(seed.encode()) if len(seed) > 0 else b""
+            output = shuffler(lst, keccak_seed)
             results.append({"seed": seed, "input": lst, "output": output})
 
     body = {
